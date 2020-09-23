@@ -2,6 +2,7 @@
 // https://stackoverflow.com/questions/52301869/count-the-number-of-objects-created-by-java
 // https://www.javatpoint.com/string-concatenation-in-java
 // https://www.w3schools.com/java/java_constructors.asp
+//http://best-practice-software-engineering.ifs.tuwien.ac.at/patterns/delegation.html
 
 import java.util.Random;
 
@@ -17,17 +18,13 @@ public abstract class Animal{
     //This can be a problem in the future if we add more animals, as there are some animal types that have very long names (i.e. mountain goat, mountain cur, etc.).
     private String aniID;
 
+    //All animals will reference the NoiseBehavior class below as all animal noises have been delegated to that class.
     private NoiseBehavior noiseBehavior;
 
     //Methods below provide abstraction for the tasks required by the zookeeper (eat, sleep, wake up, etc.)
     public void wakeUp(){
         System.out.println(this.name + " the " + this.aniType + " wakes up.");
     }
-
-    //This method is the default for every animal in case we forget to override it in the subclasses.
-//    public void makeNoise(){
-//        System.out.println(this.name  + " the " + this.aniType + " makes a noise.");
-//    }
 
     public void eat(){
         System.out.println(this.name  + " the " + this.aniType + " eats.");
@@ -72,34 +69,40 @@ public abstract class Animal{
         noiseBehavior = nb;
     }
 
+    //Method that will be used to have the animal make noise, referencing the makeNoise method within NoiseBehavior.
     public void performNoise(){
         System.out.println(this.name + " the " + this.aniType + noiseBehavior.makeNoise());
     }
 
 }
 
+//Delegate all of the animals' noise behaviors to the NoiseBehavior class
 interface NoiseBehavior {
     public String makeNoise();
 }
 
+//Sound behavior specific to felines
 class PurrSound implements NoiseBehavior{
     public String makeNoise(){
         return(" purrs.");
     }
 }
 
+//Sound behavior specific to canines
 class WoofSound implements NoiseBehavior{
     public String makeNoise(){
         return(" woofs.");
     }
 }
 
+//Sound behavior specific to cervidaes
 class BellowSound implements  NoiseBehavior{
     public String makeNoise(){
         return(" bellows.");
     }
 }
 
+//Sound behavior specific to pachyderms
 class GroanSound implements  NoiseBehavior{
     public String makeNoise(){
         return(" groans.");

@@ -1,5 +1,5 @@
 //Source: https://www.w3schools.com/java/java_arraylist.asp
-
+//https://kodejava.org/how-do-i-listen-for-beans-property-change-event/
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -51,10 +51,10 @@ public abstract class ZooEmployee{
         return role;
     }
 
-    //Employee ID's will have EMP at the front to distinguish them from the animals' IDs.
+    //Employee IDs will have the employee's role appended with the number in which they were created for that role.
     public void setEmpID(){
         empCount++;
-        empID = "EMP" + empCount;
+        empID = role + empCount;
     }
 
     public String getEmpID(){
@@ -64,6 +64,7 @@ public abstract class ZooEmployee{
 
 }
 
+//Implement observer pattern for ZooEmployee in the form of ZooAnnouncer. ZooAnnouncer will announce that an employee is doing a task if it has received an indication from that employee.
 class ZooAnnouncer extends ZooEmployee implements PropertyChangeListener{
 
     public ZooAnnouncer(String name, float wage){
@@ -80,51 +81,59 @@ class ZooAnnouncer extends ZooEmployee implements PropertyChangeListener{
         int startRole = actInfo.indexOf("source=") + 7;
         int endRole = actInfo.indexOf('@');
         String role = actInfo.substring(startRole,endRole);
-        String action = "\nHi, this is the Zoo Announcer. The " + role + " is about to " + evt.getPropertyName() + " the animals!\n";
+        //Print out who is performing what action
+        String action = "Hi, this is the Zoo Announcer. The " + role + " is about to " + evt.getPropertyName() + " the animals!\n";
         System.out.println(action);
     }
 
 }
 
 class ZooFoodServer extends ZooEmployee{
+    //Watcher will be the ZooAnnouncer that observes and announces when the ZooFoodServer serves food.
     private PropertyChangeSupport watcher = new PropertyChangeSupport(this);
+    //Used to keep track if ZFS has already served lunch or not.
     private boolean lunchServed = false;
 
     public ZooFoodServer(String name, float wage, ZooAnnouncer za){
         this.setName(name);
         this.setWage(wage);
-        this.setRole("Zoo food server");
+        this.setRole("ZooFoodServer");
         this.setEmpID();
         this.addPropertyChangeListener(za);
     }
 
     public void makeFood(){
-        //Make food
-        System.out.println(this.getRole() + " is making food");
+        //Print out that the server is making food
+        System.out.println(this.getRole() + " is making food.\n");
     }
 
     public void serveFood(){
-        //Serve at 12AM and 5PM
         String meal = "";
         if (this.lunchServed == false){
+            //Set lunchServed to true so next time this is called it will serve dinner instead
             this.lunchServed = true;
+            //Notify ZooAnnouncer (observer) that it is about to serve lunch
             watcher.firePropertyChange("serve lunch to",false,true);
             meal = "lunch";
         }
         else{
+            //Set lunchServed to true so next time this is called it will serve dinner instead
             this.lunchServed = false;
+            //Notify ZooAnnouncer (observer) that it is about to serve dinner
             watcher.firePropertyChange("serve dinner to",true,false);
             meal = "dinner";
         }
-        System.out.println("The " + this.getRole() + " is serving " + meal + ".");
+        //Print out that the server is serving food
+        System.out.println("The " + this.getRole() + " is serving " + meal + ".\n");
 
     }
 
     public void cleanFood(){
-        //After serving food
-        System.out.println(this.getRole() + " is cleaning up the food.");
+        //Print out that they are cleaning up the food
+        System.out.println(this.getRole() + " is cleaning up the food.\n");
     }
 
+    //Add or remove the observer for the employee
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         watcher.addPropertyChangeListener(listener);
     }
@@ -135,6 +144,7 @@ class ZooFoodServer extends ZooEmployee{
 }
 
 class Zookeeper extends ZooEmployee{
+    //Watcher will be the ZooAnnouncer that observes and announces when the ZooFoodServer serves food.
     private PropertyChangeSupport watcher = new PropertyChangeSupport(this);
 
     public Zookeeper(String name, float wage, ZooAnnouncer za){
@@ -151,6 +161,7 @@ class Zookeeper extends ZooEmployee{
     //The methods will return the actions of both the zookeeper and each animal in an arraylist.
 
     public void wakeAnimals(ArrayList<Animal> zoo){
+        //Notify ZooAnnouncer (observer) that it is about to wake the animals
         watcher.firePropertyChange("wake",false,true);
         int len = zoo.size();
         for (int i = 0; i < len; i++){
@@ -159,9 +170,11 @@ class Zookeeper extends ZooEmployee{
             System.out.println(this.getRole() + " wakes up " + aniName + " the " + aniType +".");
             zoo.get(i).wakeUp();
         }
+        System.out.println();
     }
 
     public void rollCall(ArrayList<Animal> zoo){
+        //Notify ZooAnnouncer (observer) that it is about to roll call the animals
         watcher.firePropertyChange("roll call",false,true);
         int len = zoo.size();
         for (int i = 0; i < len; i++){
@@ -170,9 +183,11 @@ class Zookeeper extends ZooEmployee{
             System.out.println(this.getRole() + " calls out to " + aniName + " the " + aniType + ".");
             zoo.get(i).performNoise();
         }
+        System.out.println();
     }
 
     public void feed(ArrayList<Animal> zoo){
+        //Notify ZooAnnouncer (observer) that it is about to feed the animals
         watcher.firePropertyChange("feed",false,true);
         int len = zoo.size();
         for (int i = 0; i < len; i++){
@@ -181,9 +196,11 @@ class Zookeeper extends ZooEmployee{
             System.out.println(this.getRole() + " feeds " + aniName + " the " + aniType + ".");
             zoo.get(i).eat();
         }
+        System.out.println();
     }
 
     public void exercise(ArrayList<Animal> zoo){
+        //Notify ZooAnnouncer (observer) that it is about to exercise with the animals
         watcher.firePropertyChange("exercise with",false,true);
         int len = zoo.size();
         for (int i = 0; i < len; i++){
@@ -192,9 +209,11 @@ class Zookeeper extends ZooEmployee{
             System.out.println(this.getRole() + " orders " + aniName + " the " + aniType + " to go roam.");
             zoo.get(i).roam();
         }
+        System.out.println();
     }
 
     public void putToSleep(ArrayList<Animal> zoo){
+        //Notify ZooAnnouncer (observer) that it is about to put all of the animals to sleep
         watcher.firePropertyChange("put to sleep all of",false,true);
         int len = zoo.size();
         ArrayList<String> actions = new ArrayList<>();
@@ -204,8 +223,10 @@ class Zookeeper extends ZooEmployee{
             System.out.println(this.getRole() + " puts " + aniName + " the " + aniType + " to sleep.");
             zoo.get(i).sleep();
         }
+        System.out.println();
     }
 
+    //Add or remove the observer for the employee
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         watcher.addPropertyChangeListener(listener);
     }
