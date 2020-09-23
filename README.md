@@ -1,4 +1,4 @@
-# OOAD-Project1
+# OOAD-Project2
 
 ### Members:
 Anna Nuggehalli, Dylan Quach, Casey Tran
