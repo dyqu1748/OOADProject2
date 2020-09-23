@@ -15,6 +15,8 @@ public abstract class ZooEmployee{
     //Every employee will have an id attribute to identify them. It will correlate to when they created with respect to the other employees.
     private String empID;
     private static int empCount = 0;
+    //Attribute added to properly implement the observer pattern below. Holds the current action of the employee which will be used in output.
+    private String curAction = "";
 
     //clockIn and clockOut will be utilized to notify the user that the zookeeper has arrived on day X. They should be used in conjunction with a string indicating the day in main.
 
@@ -51,6 +53,14 @@ public abstract class ZooEmployee{
         return role;
     }
 
+    public void setCurAction(String action){
+        curAction = action;
+    }
+
+    public String getCurAction(){
+        return curAction;
+    }
+
     //Employee IDs will have the employee's role appended with the number in which they were created for that role.
     public void setEmpID(){
         empCount++;
@@ -82,7 +92,7 @@ class ZooAnnouncer extends ZooEmployee implements PropertyChangeListener{
         int endRole = actInfo.indexOf('@');
         String role = actInfo.substring(startRole,endRole);
         //Print out who is performing what action
-        String action = "Hi, this is the Zoo Announcer. The " + role + " is about to " + evt.getPropertyName() + " the animals!\n";
+        String action = "Hi, this is the Zoo Announcer. The " + role + " is about to " + evt.getNewValue() + "\n";
         System.out.println(action);
     }
 
@@ -105,6 +115,7 @@ class ZooFoodServer extends ZooEmployee{
     public void makeFood(){
         //Print out that the server is making food
         System.out.println(this.getRole() + " is making food.\n");
+        this.setCurAction("making food");
     }
 
     public void serveFood(){
@@ -113,14 +124,18 @@ class ZooFoodServer extends ZooEmployee{
             //Set lunchServed to true so next time this is called it will serve dinner instead
             this.lunchServed = true;
             //Notify ZooAnnouncer (observer) that it is about to serve lunch
-            watcher.firePropertyChange("serve lunch to",false,true);
+            String pastAct = this.getCurAction();
+            this.setCurAction("serve lunch to the animals!");
+            watcher.firePropertyChange("curAction",pastAct,this.getCurAction());
             meal = "lunch";
         }
         else{
             //Set lunchServed to true so next time this is called it will serve dinner instead
             this.lunchServed = false;
             //Notify ZooAnnouncer (observer) that it is about to serve dinner
-            watcher.firePropertyChange("serve dinner to",true,false);
+            String pastAct = this.getCurAction();
+            this.setCurAction("serve dinner to the animals!");
+            watcher.firePropertyChange("curAction",pastAct,this.getCurAction());
             meal = "dinner";
         }
         //Print out that the server is serving food
@@ -131,6 +146,7 @@ class ZooFoodServer extends ZooEmployee{
     public void cleanFood(){
         //Print out that they are cleaning up the food
         System.out.println(this.getRole() + " is cleaning up the food.\n");
+        this.setCurAction("cleaning up the food");
     }
 
     //Add or remove the observer for the employee
@@ -162,7 +178,9 @@ class Zookeeper extends ZooEmployee{
 
     public void wakeAnimals(ArrayList<Animal> zoo){
         //Notify ZooAnnouncer (observer) that it is about to wake the animals
-        watcher.firePropertyChange("wake",false,true);
+        String pastAct = this.getCurAction();
+        this.setCurAction("wake up the animals!");
+        watcher.firePropertyChange("curAction",pastAct,this.getCurAction());
         int len = zoo.size();
         for (int i = 0; i < len; i++){
             String aniName = zoo.get(i).getName();
@@ -175,7 +193,9 @@ class Zookeeper extends ZooEmployee{
 
     public void rollCall(ArrayList<Animal> zoo){
         //Notify ZooAnnouncer (observer) that it is about to roll call the animals
-        watcher.firePropertyChange("roll call",false,true);
+        String pastAct = this.getCurAction();
+        this.setCurAction("roll call the animals!");
+        watcher.firePropertyChange("curAction",pastAct,this.getCurAction());
         int len = zoo.size();
         for (int i = 0; i < len; i++){
             String aniName = zoo.get(i).getName();
@@ -188,7 +208,9 @@ class Zookeeper extends ZooEmployee{
 
     public void feed(ArrayList<Animal> zoo){
         //Notify ZooAnnouncer (observer) that it is about to feed the animals
-        watcher.firePropertyChange("feed",false,true);
+        String pastAct = this.getCurAction();
+        this.setCurAction("feed the animals!");
+        watcher.firePropertyChange("curAction",pastAct,this.getCurAction());
         int len = zoo.size();
         for (int i = 0; i < len; i++){
             String aniName = zoo.get(i).getName();
@@ -201,7 +223,9 @@ class Zookeeper extends ZooEmployee{
 
     public void exercise(ArrayList<Animal> zoo){
         //Notify ZooAnnouncer (observer) that it is about to exercise with the animals
-        watcher.firePropertyChange("exercise with",false,true);
+        String pastAct = this.getCurAction();
+        this.setCurAction("exercise with the animals!");
+        watcher.firePropertyChange("curAction",pastAct,this.getCurAction());
         int len = zoo.size();
         for (int i = 0; i < len; i++){
             String aniName = zoo.get(i).getName();
@@ -214,7 +238,9 @@ class Zookeeper extends ZooEmployee{
 
     public void putToSleep(ArrayList<Animal> zoo){
         //Notify ZooAnnouncer (observer) that it is about to put all of the animals to sleep
-        watcher.firePropertyChange("put to sleep all of",false,true);
+        String pastAct = this.getCurAction();
+        this.setCurAction("put the animals to sleep!");
+        watcher.firePropertyChange("curAction",pastAct,this.getCurAction());
         int len = zoo.size();
         ArrayList<String> actions = new ArrayList<>();
         for (int i = 0; i < len; i++){
