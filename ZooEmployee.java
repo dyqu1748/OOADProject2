@@ -19,11 +19,11 @@ public abstract class ZooEmployee{
     //clockIn and clockOut will be utilized to notify the user that the zookeeper has arrived on day X. They should be used in conjunction with a string indicating the day in main.
 
     public String clockIn(){
-        return(this.role + " arrives at Zoo ");
+        return(this.role + " arrives at Zoo on day ");
     }
 
     public String clockOut(){
-        return(this.role + " goes home ");
+        return(this.role + " goes home at the end of day ");
     }
 
     //Getter and setter functions for ZooEmployee's private attributes (abstraction).
@@ -74,17 +74,14 @@ class ZooAnnouncer extends ZooEmployee implements PropertyChangeListener{
 
     }
     public void propertyChange(PropertyChangeEvent evt){
+        //actInfo hold the information on who is performing what action. The property name will have the action while the source will be the role of the employee performing said action.
         String actInfo = evt.toString();
+        //startRole and endRole will get the indices of where the employee's role title starts and ends.
         int startRole = actInfo.indexOf("source=") + 7;
         int endRole = actInfo.indexOf('@');
         String role = actInfo.substring(startRole,endRole);
-        String action = "\nHi, this is the Zoo Announcer. The " + role + " is about to " + evt.getPropertyName() + " the animals!";
+        String action = "\nHi, this is the Zoo Announcer. The " + role + " is about to " + evt.getPropertyName() + " the animals!\n";
         System.out.println(action);
-        //Need to somehow record announcement
-    }
-
-    public String recordAnnounce(String ann){
-        return ann;
     }
 
 }
@@ -103,7 +100,7 @@ class ZooFoodServer extends ZooEmployee{
 
     public void makeFood(){
         //Make food
-        System.out.println(this.getRole() + "is making food");
+        System.out.println(this.getRole() + " is making food");
     }
 
     public void serveFood(){
@@ -119,13 +116,13 @@ class ZooFoodServer extends ZooEmployee{
             watcher.firePropertyChange("serve dinner to",true,false);
             meal = "dinner";
         }
-        System.out.println(this.getRole() + "is serving " + meal + ".");
+        System.out.println("The " + this.getRole() + " is serving " + meal + ".");
 
     }
 
     public void cleanFood(){
         //After serving food
-        System.out.println(this.getRole() + "is cleaning up the food.");
+        System.out.println(this.getRole() + " is cleaning up the food.");
     }
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {
@@ -171,7 +168,7 @@ class Zookeeper extends ZooEmployee{
             String aniName = zoo.get(i).getName();
             String aniType = zoo.get(i).getAniType();
             System.out.println(this.getRole() + " calls out to " + aniName + " the " + aniType + ".");
-            zoo.get(i).makeNoise();
+            zoo.get(i).performNoise();
         }
     }
 

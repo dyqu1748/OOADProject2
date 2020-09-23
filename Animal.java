@@ -17,15 +17,17 @@ public abstract class Animal{
     //This can be a problem in the future if we add more animals, as there are some animal types that have very long names (i.e. mountain goat, mountain cur, etc.).
     private String aniID;
 
+    private NoiseBehavior noiseBehavior;
+
     //Methods below provide abstraction for the tasks required by the zookeeper (eat, sleep, wake up, etc.)
     public void wakeUp(){
         System.out.println(this.name + " the " + this.aniType + " wakes up.");
     }
 
     //This method is the default for every animal in case we forget to override it in the subclasses.
-    public void makeNoise(){
-        System.out.println(this.name  + " the " + this.aniType + " makes a noise.");
-    }
+//    public void makeNoise(){
+//        System.out.println(this.name  + " the " + this.aniType + " makes a noise.");
+//    }
 
     public void eat(){
         System.out.println(this.name  + " the " + this.aniType + " eats.");
@@ -66,6 +68,42 @@ public abstract class Animal{
         return aniID;
     }
 
+    public void setNoiseBehavior(NoiseBehavior nb){
+        noiseBehavior = nb;
+    }
+
+    public void performNoise(){
+        System.out.println(this.name + " the " + this.aniType + noiseBehavior.makeNoise());
+    }
+
+}
+
+interface NoiseBehavior {
+    public String makeNoise();
+}
+
+class PurrSound implements NoiseBehavior{
+    public String makeNoise(){
+        return(" purrs.");
+    }
+}
+
+class WoofSound implements NoiseBehavior{
+    public String makeNoise(){
+        return(" woofs.");
+    }
+}
+
+class BellowSound implements  NoiseBehavior{
+    public String makeNoise(){
+        return(" bellows.");
+    }
+}
+
+class GroanSound implements  NoiseBehavior{
+    public String makeNoise(){
+        return(" groans.");
+    }
 }
 
 
@@ -84,7 +122,7 @@ class Feline extends Animal{
         }
         //If chance is between 31 and 60 (30% chance), the feline will make noise.
         else if (chance > 30 && chance <=60){
-            this.makeNoise();
+            this.performNoise();
         }
         //Otherwise, the feline will sleep (40% chance).
         else{
@@ -109,6 +147,7 @@ class Tiger extends Feline{
     public Tiger(){
         //Assign name according to the number of lions created (max 2).
         this.setName(nameChoice[numAni]);
+        this.setNoiseBehavior(new PurrSound());
         this.setAniType("Tiger");
         numAni++;
         this.setAniID(numAni);
@@ -130,6 +169,7 @@ class Cat extends Feline{
     public Cat(){
         //Assign name according to the number of cats created (max 2).
         this.setName(nameChoice[numAni]);
+        this.setNoiseBehavior(new PurrSound());
         this.setAniType("Cat");
         numAni++;
         this.setAniID(numAni);
@@ -145,6 +185,7 @@ class Lion extends Feline{
     public Lion(){
         //Assign name according to the number of lions created (max 2).
         this.setName(nameChoice[numAni]);
+        this.setNoiseBehavior(new PurrSound());
         this.setAniType("Lion");
         numAni++;
         this.setAniID(numAni);
@@ -171,7 +212,6 @@ class Pachyderm extends Animal{
     }
 }
 
-//NOTE: I've implemented a unique version of makeNoise() for each subtype of pachyderm (polymorphism). Each one should make their own sound.
 
 class Rhino extends Pachyderm{
 
@@ -181,15 +221,10 @@ class Rhino extends Pachyderm{
     public Rhino(){
         //Assign name according to the number of rhinos created (max 2).
         this.setName(nameChoice[numAni]);
+        this.setNoiseBehavior(new GroanSound());
         this.setAniType("Rhino");
         numAni++;
         this.setAniID(numAni);
-    }
-
-    public void makeNoise(){
-        String aniName = this.getName();
-        String aniType = this.getAniType();
-        System.out.println(aniName + " the " + aniType + " grunts.");
     }
 
 }
@@ -202,15 +237,10 @@ class Hippo extends Pachyderm{
     public Hippo(){
         //Assign name according to the number of hippos created (max 2).
         this.setName(nameChoice[numAni]);
+        this.setNoiseBehavior(new GroanSound());
         this.setAniType("Hippo");
         numAni++;
         this.setAniID(numAni);
-    }
-
-    public void makeNoise(){
-        String aniName = this.getName();
-        String aniType = this.getAniType();
-        System.out.println(aniName + " the " + aniType + " groans.");
     }
 
 }
@@ -223,27 +253,15 @@ class Elephant extends Pachyderm{
     public Elephant(){
         //Assign name according to the number of elephants created (max 2).
         this.setName(nameChoice[numAni]);
+        this.setNoiseBehavior(new GroanSound());
         this.setAniType("Elephant");
         numAni++;
         this.setAniID(numAni);
     }
 
-    public void makeNoise(){
-        String aniName = this.getName();
-        String aniType = this.getAniType();
-        System.out.println(aniName + " the " + aniType + " trumpets.");
-    }
-
 }
 
 class Canine extends Animal{
-
-    //Unique version of makeNoise() method for Canines (polymorphism). All subtypes will growl.
-    public void makeNoise(){
-        String aniName = this.getName();
-        String aniType = this.getAniType();
-        System.out.println(aniName + " the " + aniType + " growls.");
-    }
 
     //Unique version of roam() method for Canines (polymorphism). All subtypes will chase their own tail (dog has chance of doing different action).
     public void roam(){
@@ -261,6 +279,7 @@ class Dog extends Canine{
     public Dog(){
         //Assign name according to the number of dogs created (max 2).
         this.setName(nameChoice[numAni]);
+        this.setNoiseBehavior(new WoofSound());
         this.setAniType("Dog");
         numAni++;
         this.setAniID(numAni);
@@ -293,6 +312,7 @@ class Wolf extends Canine{
     public Wolf(){
         //Assign name according to the number of wolves created (max 2).
         this.setName(nameChoice[numAni]);
+        this.setNoiseBehavior(new WoofSound());
         this.setAniType("Wolf");
         numAni++;
         this.setAniID(numAni);
@@ -301,13 +321,6 @@ class Wolf extends Canine{
 }
 
 class Cervidae extends Animal{
-
-    //Unique makeNoise() version for the Cervidae class (polymorphism). All subclasses will bellow.
-    public void makeNoise(){
-        String aniName = this.getName();
-        String aniType = this.getAniType();
-        System.out.println(aniName + " the " + aniType + " bellows.");
-    }
 
     public void eat(){
         String aniName = this.getName();
@@ -325,6 +338,7 @@ class Moose extends Cervidae{
     public Moose(){
         //Assign name according to the number of mooses created (max 2).
         this.setName(nameChoice[numAni]);
+        this.setNoiseBehavior(new BellowSound());
         this.setAniType("Moose");
         numAni++;
         this.setAniID(numAni);
@@ -339,6 +353,7 @@ class Caribou extends Cervidae{
     public Caribou(){
         //Assign name according to the number of caribou created (max 2).
         this.setName(nameChoice[numAni]);
+        this.setNoiseBehavior(new BellowSound());
         this.setAniType("Caribou");
         numAni++;
         this.setAniID(numAni);
