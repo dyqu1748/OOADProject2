@@ -6,19 +6,18 @@
 //https://www.journaldev.com/1050/java-timer-timertask-example
 //https://kodejava.org/how-do-i-listen-for-beans-property-change-event/
 
-import java.beans.PropertyChangeSupport;
-import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.io.*;
 import java.util.Timer;
-import java.util.TimerTask;
-
 
 public class Main {
     protected static Main taskRunning;
 
     public static void main(String[] args){
         try{
+            //Let the user know that the program is currently running (the runtime is about 8.4 seconds total)
+            System.out.println("The Zoo is now open! Give it about 10 seconds to run for 1 week...");
+
             //This object will be used to make the main thread wait for the timer tasks to complete its one week run
             taskRunning = new Main();
             //Create output file to record all the actions and announcements
@@ -43,17 +42,17 @@ public class Main {
             //Populate the zoo with 2 of each animal type
             bigBoss.setAnimals();
 
-            //Initialize the zoo clock
+            //Initialize the ZooClock object which will be a timer
             Timer ZooClock = new Timer();
 
-            //hourlyTasks will notify the director of the day and time.
-            HourIncrement hourlyTasks = new HourIncrement();
+            //hourlyTasks will advance the clock by an hour and notify the director of the day and time.
+            ClockIncrement hourlyTasks = new ClockIncrement();
 
             //Add the director as an observer of the clock
             hourlyTasks.addPropertyChangeListener(bigBoss);
 
-            //Have the clock notify the director that its hour has changed. Every hour in the zoo = .5 real-life seconds.
-            ZooClock.scheduleAtFixedRate(hourlyTasks, 0, 500);
+            //Have the clock notify the director that its hour has changed. Every hour in the zoo = .1 real-life seconds.
+            ZooClock.scheduleAtFixedRate(hourlyTasks, 0, 100);
             synchronized (taskRunning){
                 //Make the main thread wait for timer task to finish
                 taskRunning.wait();
@@ -68,44 +67,3 @@ public class Main {
     }
 }
 
-class HourIncrement extends TimerTask {
-    private PropertyChangeSupport watcher = new PropertyChangeSupport(this);
-    private int time = 7;
-    private int day = 0;
-
-    public void run() {
-        if (day == 0) {
-            watcher.firePropertyChange("day", day, ++day);
-        }
-        watcher.firePropertyChange("time", time, ++time);
-        //When the clock reaches 8 PM, increase the day by 1 and reset the time back to 7 AM.
-        if (time == 20) {
-            watcher.firePropertyChange("day", day, ++day);
-            time = 7;
-        }
-        //If a week has passed, notify the main function that the timer task is finished and end the program.
-        if (day > 7) {
-            synchronized (Main.taskRunning){
-                Main.taskRunning.notify();
-            }
-        }
-    }
-
-    //Add or remove the observer for the clock
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-    watcher.addPropertyChangeListener(listener);
-    }
-
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-    watcher.removePropertyChangeListener(listener);
-    }
-
-    //Getters for the private attributes above. Time/day will only be modifiable through the running task above.
-    public int getDay(){
-        return day;
-    }
-
-    public int getTime(){
-        return time;
-    }
-}
