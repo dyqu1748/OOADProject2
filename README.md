@@ -6,7 +6,7 @@ Anna Nuggehalli, Dylan Quach, Casey Tran
 ## Assumptions Made:
 - User is running the program on IntelliJ IDEA.
 - JDK is version 8 or newer.
-- Every hour passed in the zoo is .5 seconds in real life.
+- Every hour passed in the zoo is .1 seconds in real life.
 - Multiple tasks can be performed in a single hour (ZooFoodServer can serve food and Zookeeper can feed animals immediately after).
 
 ## Issues During Dev:
